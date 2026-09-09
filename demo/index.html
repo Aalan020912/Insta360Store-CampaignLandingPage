@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insta360 商城 · 活动落地页管理后台</title>
+<style>
+:root{
+  --sidebar:#1E2126; --sidebar-active:#2A2E36; --bg:#F5F6F8; --card:#FFFFFF;
+  --ink:#1A1A1A; --ink-2:#5A6472; --ink-3:#9AA3B0;
+  --blue:#2B6CB0; --red:#E53E3E; --green:#38A169; --orange:#DD6B20; --gray:#718096;
+  --border:#E4E7EC; --radius:10px;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.08);
+  --shadow-lg:0 16px 40px rgba(16,24,40,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:"PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);font-size:13px;overflow:hidden}
+#app{display:flex;height:100vh}
+/* ================= sidebar ================= */
+aside{width:220px;background:var(--sidebar);color:#fff;display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:20px 18px 12px;display:flex;gap:9px;align-items:flex-start}
+.logo .dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,#E53E3E,#DD6B20);margin-top:4px;flex-shrink:0}
+.logo b{font-size:15px;letter-spacing:.5px;display:block}
+.logo small{display:block;font-size:10px;color:#8B93A1;margin-top:2px;letter-spacing:1.5px}
+.nav{padding:10px;flex:1}
+.nav-sec{font-size:10px;color:#6B7482;letter-spacing:2px;padding:10px 12px 6px}
+.nav-item{padding:10px 12px;border-radius:8px;cursor:pointer;color:#B8C0CC;display:flex;gap:10px;align-items:center;margin-bottom:3px;transition:.15s}
+.nav-item:hover{background:var(--sidebar-active);color:#fff}
+.nav-item.active{background:var(--sidebar-active);color:#fff;font-weight:600;box-shadow:inset 2px 0 0 #E53E3E}
+.nav-item .ico{width:18px;text-align:center}
+/* clock */
+.clock{margin:12px;padding:12px;background:#262B33;border:1px solid #343A45;border-radius:10px}
+.clock .lbl{font-size:11px;color:#8B93A1;margin-bottom:6px;display:flex;justify-content:space-between}
+.clock .lbl em{font-style:normal;color:#FFD966}
+.clock .now{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;color:#FFD966;margin-bottom:10px}
+.clock .btns{display:flex;gap:6px;flex-wrap:wrap}
+.clock button{flex:1;min-width:56px;padding:6px 2px;font-size:11px;background:#343A45;color:#D5DBE3;border:1px solid #454C59;border-radius:6px;cursor:pointer;transition:.15s}
+.clock button:hover{background:#3F4654;color:#fff}
+.clock .tip{font-size:10px;color:#6B7482;margin-top:8px;line-height:1.5}
+.clock .tz-ref{margin-top:10px;border-top:1px solid #343A45;padding-top:10px}
+.clock .tz-row{display:flex;justify-content:space-between;font-size:11px;line-height:1.9;color:#D5DBE3}
+.clock .tz-row span{color:#8B93A1}
+.clock .tz-row b{font-weight:600;font-variant-numeric:tabular-nums;color:#fff}
+/* ================= main ================= */
+main{flex:1;overflow-y:auto;padding:24px 30px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;gap:16px}
+.page-head h1{font-size:22px;font-weight:600}
+.page-head .sub{color:var(--ink-2);font-size:12px;margin-top:5px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:13px;transition:.15s;color:var(--ink);white-space:nowrap}
+.btn:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.primary:hover{background:#000}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.danger{color:var(--red);border-color:#F5C2C2}
+.btn.sm{padding:5px 11px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+/* toolbar */
+.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.tabs{display:flex;background:#E9ECF0;border-radius:8px;padding:3px}
+.tab{padding:6px 14px;border-radius:6px;cursor:pointer;color:var(--ink-2);transition:.15s;font-size:12px}
+.tab.active{background:#fff;color:var(--ink);font-weight:600;box-shadow:var(--shadow)}
+.search{margin-left:auto}
+.search input{width:240px;padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%239AA3B0" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>') no-repeat 10px center;outline:none}
+.search input:focus{border-color:var(--blue)}
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.draft{background:#EDF0F3;color:var(--gray)}
+.badge.scheduled{background:#FDF0E4;color:var(--orange)}
+.badge.live{background:#E6F6EC;color:var(--green)}
+.badge.live::before{animation:pulse 1.6s infinite}
+.badge.ended{background:#E4E7EC;color:#4A5568}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(56,161,105,.5)}70%{box-shadow:0 0 0 6px rgba(56,161,105,0)}100%{box-shadow:0 0 0 0 rgba(56,161,105,0)}}
+/* campaign cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+.c-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:.18s;animation:fadeUp .3s}
+.c-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.c-theme{height:8px}
+.c-body{padding:16px}
+.c-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.c-title h3{font-size:15px;font-weight:600}
+.c-meta{color:var(--ink-2);font-size:12px;line-height:1.9}
+.c-meta b{color:var(--ink);font-weight:600}
+.c-flags{font-size:15px;letter-spacing:3px}
+.c-foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);background:#FAFBFC}
+/* theme cards */
+.t-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.t-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:.18s}
+.t-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.t-card.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(43,108,176,.15)}
+.t-prev{height:120px;padding:14px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.t-prev .bar{height:10px;border-radius:5px;width:60%}
+.t-prev .bar2{height:7px;border-radius:4px;width:40%;opacity:.7}
+.t-info{padding:12px 14px;border-top:1px solid var(--border)}
+.t-info h4{font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.t-info p{color:var(--ink-2);font-size:12px;margin-top:4px}
+.t-swatch{display:flex;gap:5px;margin-top:8px}
+.t-swatch span{width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,.08)}
+/* detail */
+.d-head{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px;animation:fadeUp .3s}
+.d-themebar{height:10px}
+.d-headin{padding:18px 20px}
+.d-headin h2{font-size:19px;font-weight:600;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.d-sub{color:var(--ink-2);font-size:12px;margin-top:6px}
+.timeline{margin-top:16px}
+.tl-track{position:relative;height:8px;background:#EDF0F3;border-radius:99px}
+.tl-seg{position:absolute;top:0;height:8px;border-radius:99px;opacity:.85}
+.tl-now{position:absolute;top:-5px;width:2px;height:18px;background:var(--red)}
+.tl-now::after{content:"现在";position:absolute;top:-16px;left:-12px;font-size:10px;color:var(--red);white-space:nowrap}
+.tl-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:6px}
+.inst-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:18px}
+.i-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:.18s;animation:fadeUp .3s}
+.i-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.i-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.i-country{font-size:15px;font-weight:600;display:flex;gap:8px;align-items:center}
+.i-row{font-size:12px;color:var(--ink-2);line-height:2;display:flex;gap:6px}
+.i-row b{color:var(--ink);font-weight:500}
+.i-actions{display:flex;gap:8px;margin-top:12px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.panel h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.log-item{display:flex;gap:10px;font-size:12px;padding:8px 0;border-bottom:1px dashed var(--border);color:var(--ink-2)}
+.log-item:last-child{border:none}
+.log-item .t{color:var(--ink-3);font-variant-numeric:tabular-nums;flex-shrink:0}
+.log-item .sys{color:var(--blue);font-weight:600}
+/* wizard */
+.steps{display:flex;gap:0;margin-bottom:22px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px}
+.step{display:flex;align-items:center;gap:9px;flex:1;color:var(--ink-3)}
+.step .n{width:24px;height:24px;border-radius:50%;background:#EDF0F3;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.step.on{color:var(--ink);font-weight:600}
+.step.on .n{background:var(--ink);color:#fff}
+.step.done .n{background:var(--green);color:#fff}
+.step .line{flex:1;height:1px;background:var(--border);margin:0 14px}
+.w-sec{font-size:15px;font-weight:600;margin:0 0 14px}
+.wiz-layout{display:flex;gap:16px;align-items:flex-start}
+.inst-list{width:220px;flex-shrink:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:10px}
+.inst-li{padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:.15s;margin-bottom:4px}
+.inst-li:hover{background:#F2F4F7}
+.inst-li.on{background:#EBF2FA;border:1px solid #B9D2EC}
+.inst-li .warn{color:var(--red);font-weight:700}
+.add-inst{width:100%;padding:9px;border:1px dashed #C3CBD6;border-radius:8px;background:none;cursor:pointer;color:var(--ink-2);transition:.15s;font-size:12px}
+.add-inst:hover{border-color:var(--blue);color:var(--blue)}
+.form{flex:1;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.f-row{display:flex;gap:14px;margin-bottom:16px}
+.f-item{flex:1}
+.f-item label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:6px}
+.f-item label .req{color:var(--red)}
+.f-item input,.f-item select,.f-item textarea{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:#fff}
+.f-item input:focus,.f-item select:focus,.f-item textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(43,108,176,.1)}
+.f-item input.err,.f-item select.err,.f-item textarea.err{border-color:var(--red);background:#FFF8F8}
+.f-item input:disabled,.f-item select:disabled{background:#F2F4F7;color:var(--ink-3);cursor:not-allowed}
+.f-err{color:var(--red);font-size:11px;margin-top:4px}
+.f-tz{font-size:11px;color:var(--ink-3);margin-top:4px}
+.lock-note{background:#FDF0E4;color:var(--orange);border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:14px}
+/* product picker */
+.p-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.p-item{border:1.5px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:.15s;display:flex;gap:9px;align-items:center}
+.p-item:hover{border-color:#B9C4D1}
+.p-item.sel{border-color:var(--blue);background:#F0F6FC}
+.p-item.dis{opacity:.45;cursor:not-allowed}
+.p-thumb{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;color:#fff}
+.p-item .pn{font-size:12px;font-weight:600;line-height:1.3}
+.p-item .pp{font-size:11px;color:var(--ink-2);margin-top:2px}
+.p-item .oos{font-size:10px;color:var(--red)}
+.wiz-foot{display:flex;justify-content:space-between;margin-top:20px}
+/* modal */
+.mask{position:fixed;inset:0;background:rgba(16,20,26,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);animation:pop .25s;max-height:92vh;display:flex;flex-direction:column}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:none}}
+.m-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:14px}
+.m-head h3{font-size:16px;font-weight:600}
+.m-x{border:none;background:none;font-size:18px;cursor:pointer;color:var(--ink-3);padding:4px}
+.m-x:hover{color:var(--ink)}
+.m-body{padding:20px;overflow-y:auto}
+.m-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+/* checklist */
+.chk{display:flex;gap:12px;padding:13px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;align-items:flex-start;transition:.15s}
+.chk .ic{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#fff}
+.chk.pass .ic{background:var(--green)}
+.chk.fail .ic{background:var(--red)}
+.chk.fail{border-color:#F5C2C2;background:#FFFAFA}
+.chk h5{font-size:13px;font-weight:600}
+.chk p{font-size:12px;color:var(--ink-2);margin-top:3px;line-height:1.6}
+.chk .jump{margin-left:auto;flex-shrink:0}
+/* preview modal */
+.pv-modal{width:1080px;max-width:96vw}
+.pv-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pv-url{flex:1;min-width:280px;background:#F2F4F7;border-radius:8px;padding:8px 12px;font-size:12px;color:var(--ink-2);font-family:Consolas,monospace;display:flex;gap:8px;align-items:center;overflow:hidden;white-space:nowrap}
+.pv-url .tk{background:#FFF3CD;color:#8A6D1A;padding:1px 7px;border-radius:5px;font-size:10px;font-weight:700;flex-shrink:0}
+.pv-url .pub{background:#E6F6EC;color:var(--green);padding:1px 7px;border-radius:5px;font-size:10px;font-weight:700;flex-shrink:0}
+.seg{display:flex;background:#E9ECF0;border-radius:8px;padding:3px}
+.seg span{padding:5px 13px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--ink-2);transition:.15s}
+.seg span.on{background:#fff;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+.pv-stage{flex:1;overflow-y:auto;background:#3A3F47;display:flex;justify-content:center;padding:26px;min-height:480px}
+.device{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35);transition:width .3s;height:fit-content}
+.device.pc{width:920px}
+.device.mobile{width:375px;border:8px solid #14161A;border-radius:28px}
+.wm{background:repeating-linear-gradient(-45deg,#FFF8E1,#FFF8E1 12px,#FFF3CD 12px,#FFF3CD 24px);color:#8A6D1A;text-align:center;font-size:11px;font-weight:700;padding:5px;letter-spacing:1px}
+/* landing page render */
+.lp-banner{padding:38px 34px;color:#fff;position:relative;overflow:hidden}
+.lp-banner .tag{display:inline-block;padding:3px 12px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:1px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);margin-bottom:14px}
+.lp-banner h1{font-size:30px;font-weight:800;line-height:1.25;margin-bottom:8px}
+.device.mobile .lp-banner{padding:26px 20px}
+.device.mobile .lp-banner h1{font-size:22px}
+.lp-banner .sub2{font-size:14px;opacity:.85}
+.lp-count{display:inline-flex;gap:8px;margin-top:16px}
+.lp-count div{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 11px;text-align:center;min-width:46px}
+.lp-count b{font-size:17px;display:block;font-variant-numeric:tabular-nums}
+.lp-count i{font-style:normal;font-size:9px;opacity:.75}
+.lp-body{padding:22px 26px}
+.device.mobile .lp-body{padding:16px 14px}
+.lp-sec{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.lp-sec::before{content:"";width:4px;height:14px;border-radius:2px}
+.lp-prods{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+.device.mobile .lp-prods{grid-template-columns:repeat(2,1fr)}
+.lp-prod{border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:.15s}
+.lp-prod:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.lp-prod .img{height:86px;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff}
+.lp-prod .inf{padding:10px}
+.lp-prod .nm{font-size:12px;font-weight:600;line-height:1.35}
+.lp-prod .pr{font-size:14px;font-weight:800;margin-top:5px}
+.lp-prod .pr s{font-size:11px;color:var(--ink-3);font-weight:400;margin-left:5px}
+.lp-gifts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.lp-gift{display:flex;gap:8px;align-items:center;border:1px dashed #D8B34A;background:#FFFDF4;border-radius:8px;padding:8px 12px;font-size:12px}
+.lp-gift .g{font-size:16px}
+.lp-gift b{color:#8A6D1A}
+.lp-rules{font-size:12px;color:var(--ink-2);line-height:1.9;background:#F8F9FB;border-radius:10px;padding:14px 16px;white-space:pre-line}
+/* gate page (user view, not live) */
+.gate{height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;text-align:center;padding:30px}
+.gate .big{font-size:52px}
+.gate h2{font-size:24px;font-weight:800}
+.gate p{opacity:.8;font-size:13px;max-width:400px;line-height:1.8}
+/* toast */
+#toasts{position:fixed;top:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:10px}
+.toast{background:#1E2126;color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;box-shadow:var(--shadow-lg);display:flex;gap:10px;align-items:center;animation:slideIn .3s;max-width:360px}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast.out{animation:slideOut .3s forwards}
+@keyframes slideOut{to{opacity:0;transform:translateX(30px)}}
+.toast .t-ico{flex-shrink:0}
+.empty{padding:70px 20px;text-align:center;color:var(--ink-3)}
+.empty .e{font-size:42px;margin-bottom:12px}
+.hint{background:#EBF2FA;border:1px solid #B9D2EC;color:#2B5C8F;border-radius:10px;padding:12px 16px;font-size:12px;line-height:1.8;margin-bottom:18px}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside>
+    <div class="logo"><span class="dot"></span><div><b style="font-size:16px;letter-spacing:.3px">影石 Insta360</b><small>活动落地页管理后台</small></div></div>
+    <div class="nav" id="nav"></div>
+    <div class="clock">
+      <div class="lbl"><span>⏱ 模拟服务器时间（UTC+8 北京时间）</span><em>DEMO</em></div>
+      <div class="now" id="clockNow"></div>
+      <div class="tz-ref" id="clockTZ"></div>
+      <div class="btns">
+        <button onclick="advance(1)">+1 小时</button>
+        <button onclick="advance(24)">+1 天</button>
+        <button onclick="advance(168)">+7 天</button>
+        <button onclick="resetClock()">重置</button>
+      </div>
+      <div class="tip">推进时间可演示实例「到点自动上线 / 自动下线」的状态机流转。各地实例按目标国家当地时间执行，右侧为多时区对照。</div>
+    </div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="modal-root"></div>
+<div id="toasts"></div>
+
+<script>
+/* =====================================================================
+ * Mock 数据层 —— 与 PRD 三层模型一致：Campaign → Theme → Instance
+ * ===================================================================*/
+const THEMES = [
+  { id:'t-prime', name:'Prime Day 蓝', desc:'亚马逊会员日风格，科技蓝渐变 Banner，按钮/价格强调色为亮蓝',
+    c:{ primary:'#1E6FD9', deep:'#0B3D91', bg:'#F2F7FF', accent:'#31A8FF', ink:'#FFFFFF' },
+    banner:'linear-gradient(120deg,#0B3D91 0%,#1E6FD9 55%,#31A8FF 100%)' },
+  { id:'t-bf', name:'Black Friday 黑', desc:'黑五暗黑风格，纯黑底 + 金色价格点缀，营造高端抢购氛围',
+    c:{ primary:'#111111', deep:'#000000', bg:'#17181C', accent:'#E8B84B', ink:'#FFFFFF' },
+    banner:'linear-gradient(120deg,#000000 0%,#1C1D22 60%,#3A3B42 100%)' },
+  { id:'t-618', name:'618 大促红', desc:'国内大促经典红金配色，热烈促销氛围，适配中文排版',
+    c:{ primary:'#E52E2E', deep:'#B91C1C', bg:'#FFF6F2', accent:'#FFB020', ink:'#FFFFFF' },
+    banner:'linear-gradient(120deg,#B91C1C 0%,#E52E2E 55%,#FF7A45 100%)' },
+  { id:'t-bts', name:'开学季活力橙', desc:'Back to School 年轻活力风，橙紫撞色',
+    c:{ primary:'#F26D21', deep:'#C24E0B', bg:'#FFF8F3', accent:'#7C5CFC', ink:'#FFFFFF' },
+    banner:'linear-gradient(120deg,#C24E0B 0%,#F26D21 55%,#7C5CFC 130%)' },
+];
+const COUNTRIES = [
+  { code:'UK', name:'英国', flag:'🇬🇧', tz:'Europe/London (GMT+1)', langs:['英语'] },
+  { code:'DE', name:'德国', flag:'🇩🇪', tz:'Europe/Berlin (GMT+2)', langs:['德语','英语'] },
+  { code:'ES', name:'西班牙', flag:'🇪🇸', tz:'Europe/Madrid (GMT+2)', langs:['西班牙语','英语'] },
+  { code:'US', name:'美国', flag:'🇺🇸', tz:'America/New_York (GMT-4)', langs:['英语','西班牙语'] },
+  { code:'JP', name:'日本', flag:'🇯🇵', tz:'Asia/Tokyo (GMT+9)', langs:['日语','英语'] },
+  { code:'CN', name:'中国', flag:'🇨🇳', tz:'Asia/Shanghai (GMT+8)', langs:['中文'] },
+];
+const PRODUCTS = [
+  { sku:'X5-STD',   name:'Insta360 X5 全景相机',        emoji:'📷', color:'#2B6CB0', price:'£449',  stock:120 },
+  { sku:'X4-BDL',   name:'Insta360 X4 创作者套装',       emoji:'🎥', color:'#4A5568', price:'£389',  stock:80 },
+  { sku:'ACE2-STD', name:'Ace Pro 2 运动相机',           emoji:'🏄', color:'#38A169', price:'£359',  stock:64 },
+  { sku:'GO3S-64',  name:'GO 3S 拇指相机 64GB',          emoji:'🤏', color:'#DD6B20', price:'£299',  stock:0 }, // 缺货：用于演示校验拦截
+  { sku:'FLOW-PRO', name:'Flow Pro 手机云台',            emoji:'🤳', color:'#7C5CFC', price:'£149',  stock:200 },
+  { sku:'LINK2',    name:'Link 2 AI 网络摄像头',         emoji:'🖥️', color:'#0EA5A5', price:'£179',  stock:90 },
+];
+const GIFTS = [
+  { sku:'G-CARD', name:'256GB 高速存储卡', emoji:'💾' },
+  { sku:'G-SELF', name:'隐形自拍杆',       emoji:'🪄' },
+  { sku:'G-BAT',  name:'备用快充电池',     emoji:'🔋' },
+  { sku:'G-LENS', name:'镜头保护镜套装',   emoji:'🛡️' },
+];
+const P = sku => PRODUCTS.find(p=>p.sku===sku);
+const G = sku => GIFTS.find(g=>g.sku===sku);
+
+/* 状态由模拟时钟推导：draft(未发布) → scheduled(待上线) → live(进行中) → ended(已结束) */
+let campaigns = [
+  { id:'c1', name:'2026 Prime Day', themeId:'t-prime', owner:'王运营', published:true,
+    instances:[
+      { id:'i1', country:'UK', lang:'英语', startAt:'2026-08-20T09:00', endAt:'2026-08-28T23:59',
+        products:['X5-STD','ACE2-STD','FLOW-PRO'], gifts:['G-CARD','G-SELF'],
+        copy:{ title:'Prime Day: Up to 30% OFF', subtitle:'Insta360 Summer Sale — Capture Every Angle', rules:'* Valid Aug 20–28 (BST).\n* Free 256GB card with X5.\n* While stocks last.' } },
+      { id:'i2', country:'ES', lang:'西班牙语', startAt:'2026-08-20T09:00', endAt:'2026-08-28T23:59',
+        products:['X5-STD','X4-BDL'], gifts:['G-CARD'],
+        copy:{ title:'Prime Day: hasta 30% DTO.', subtitle:'Oferta de verano Insta360', rules:'* Válido del 20 al 28 de agosto.\n* Tarjeta 256GB gratis con X5.' } },
+      { id:'i3', country:'DE', lang:'德语', startAt:'2026-08-25T09:00', endAt:'2026-09-02T23:59',
+        products:['X5-STD','GO3S-64'], gifts:['G-BAT'],
+        copy:{ title:'Prime Day: bis zu 30% Rabatt', subtitle:'Insta360 Sommer-Sale', rules:'* Gültig 25.08.–02.09.\n* Gratis Akku zur GO 3S.' } },
+    ]},
+  { id:'c2', name:'Black Friday 2026', themeId:'t-bf', owner:'王运营', published:true,
+    instances:[
+      { id:'i4', country:'UK', lang:'英语', startAt:'2026-11-27T00:00', endAt:'2026-11-30T23:59',
+        products:['X5-STD','X4-BDL','LINK2'], gifts:['G-LENS'],
+        copy:{ title:'BLACK FRIDAY — Our Biggest Sale Ever', subtitle:'Up to 40% OFF. 72 hours only.', rules:'* Nov 27–30 (GMT).\n* Doorbusters daily 9AM.' } },
+      { id:'i5', country:'DE', lang:'德语', startAt:'2026-11-27T00:00', endAt:'2026-11-30T23:59',
+        products:['X5-STD','ACE2-STD'], gifts:['G-BAT'],
+        copy:{ title:'BLACK FRIDAY — Unser größter Sale', subtitle:'Bis zu 40% Rabatt. Nur 72 Stunden.', rules:'* 27.–30. November.\n* Tägliche Deals ab 9 Uhr.' } },
+      { id:'i6', country:'ES', lang:'西班牙语', startAt:'2026-11-27T00:00', endAt:'2026-11-30T23:59',
+        products:['GO3S-64','FLOW-PRO'], gifts:['G-SELF'],
+        copy:{ title:'BLACK FRIDAY — Nuestra mayor venta', subtitle:'Hasta 40% DTO. Solo 72 horas.', rules:'* 27–30 de noviembre.\n* Ofertas diarias 9:00.' } },
+    ]},
+  { id:'c3', name:'618 年中大促', themeId:'t-618', owner:'李运营', published:true,
+    instances:[
+      { id:'i7', country:'CN', lang:'中文', startAt:'2026-06-01T00:00', endAt:'2026-06-20T23:59',
+        products:['X5-STD','ACE2-STD','GO3S-64'], gifts:['G-CARD','G-BAT'],
+        copy:{ title:'618 年中大促 · 至高立省 1500 元', subtitle:'全景影像 狂欢一夏', rules:'* 6月1日–6月20日。\n* 购 X5 赠 256GB 存储卡 + 备用电池。\n* 价保 30 天。' } },
+    ]},
+  { id:'c4', name:'开学季 Back to School', themeId:'t-bts', owner:'王运营', published:false,
+    instances:[
+      { id:'i8', country:'CN', lang:'中文', startAt:'2026-09-01T00:00', endAt:'2026-09-15T23:59',
+        products:['GO3S-64','FLOW-PRO'], gifts:[],
+        copy:{ title:'开学季 · 记录新学期的第一视角', subtitle:'学生专享 9 折起', rules:'* 9月1日–9月15日。\n* 凭学生认证享专属优惠。' } },
+      { id:'i9', country:'UK', lang:'英语', startAt:'2026-09-05T09:00', endAt:'2026-09-20T23:59',
+        products:[], gifts:['G-CARD'], // 故意缺商品：演示发布检查清单拦截
+        copy:{ title:'Back to School Sale', subtitle:'Student exclusive: 10% OFF', rules:'* Sep 5–20 (BST).\n* Student verification required.' } },
+    ]},
+];
+
+/* =====================================================================
+ * 全局状态
+ * ===================================================================*/
+const INITIAL_NOW = new Date('2026-08-18T10:00:00');
+const state = {
+  composing:false,
+  view:'list',            // list | themes | detail | wizard
+  filter:'all', search:'',
+  mockNow:new Date(INITIAL_NOW),
+  detailId:null,
+  wiz:null,               // 向导草稿
+  logs:[ {t:'2026-08-15 14:22', sys:false, msg:'王运营 发布了「2026 Prime Day」（3 个实例进入待上线队列）'},
+         {t:'2026-08-10 11:05', sys:false, msg:'王运营 发布了「Black Friday 2026」'},
+         {t:'2026-06-20 23:59', sys:true, msg:'系统自动下线「618 年中大促 / 中国」实例'} ],
+  previewed:{},           // { key: {pc:true, mobile:true} }  发布检查清单依据
+};
+const esc = s => String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function fmtTZ(d, tz){
+  try{ return d.toLocaleString('zh-CN', {timeZone:tz, hour12:false, month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}); }catch(e){ return '—'; }
+}
+const themeOf = c => THEMES.find(t=>t.id===c.themeId);
+const countryOf = code => COUNTRIES.find(c=>c.code===code);
+const fmtDT = s => s ? s.replace('T',' ') : '—';
+const fmtClock = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+function instStatus(camp, inst){
+  if(!camp.published) return 'draft';
+  if(!inst.startAt || !inst.endAt) return 'draft';
+  const now = state.mockNow.getTime();
+  if(now < new Date(inst.startAt).getTime()) return 'scheduled';
+  if(now <= new Date(inst.endAt).getTime()) return 'live';
+  return 'ended';
+}
+function campStatus(c){
+  if(!c.published) return 'draft';
+  const ss = c.instances.map(i=>instStatus(c,i));
+  if(ss.includes('live')) return 'live';
+  if(ss.every(s=>s==='ended')) return 'ended';
+  return 'scheduled';
+}
+const STATUS_TXT = { draft:'草稿', scheduled:'待上线', live:'进行中', ended:'已结束' };
+const badge = s => `<span class="badge ${s}">${STATUS_TXT[s]}</span>`;
+
+/* =====================================================================
+ * 模拟时钟：推进时间 → 状态机自动流转 → toast + 日志
+ * ===================================================================*/
+function snapshot(){ const m={}; campaigns.forEach(c=>c.instances.forEach(i=>m[i.id]=instStatus(c,i))); return m; }
+function advance(hours){
+  const before = snapshot();
+  state.mockNow = new Date(state.mockNow.getTime() + hours*3600*1000);
+  const after = snapshot();
+  campaigns.forEach(c=>c.instances.forEach(i=>{
+    if(before[i.id]!==after[i.id]){
+      const cn = countryOf(i.country);
+      const msg = `系统${after[i.id]==='live'?'自动上线':'自动下线'}「${c.name} / ${cn.name}」实例`;
+      state.logs.unshift({t:fmtClock(state.mockNow), sys:true, msg});
+      toast(`⚡ ${msg}（${STATUS_TXT[before[i.id]]} → ${STATUS_TXT[after[i.id]]}）`);
+    }
+  }));
+  render();
+}
+function resetClock(){ state.mockNow = new Date(INITIAL_NOW); toast('⏱ 模拟时间已重置'); render(); }
+
+function toast(msg){
+  const box = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className='toast'; el.innerHTML = `<span class="t-ico"></span><span>${esc(msg)}</span>`;
+  box.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(), 300); }, 3600);
+}
+
+/* =====================================================================
+ * 校验（四道防线的 L1/L2：表单即时校验 + 实例间冲突检测）
+ * ===================================================================*/
+const overlap = (a1,a2,b1,b2) => new Date(a1) < new Date(b2) && new Date(b1) < new Date(a2);
+
+function validateInstance(camp, inst, idx){
+  const e = {};
+  if(!inst.country) e.country='请选择国家/地区';
+  if(!inst.lang) e.lang='请选择文案语言';
+  if(!inst.startAt) e.startAt='请选择上线时间';
+  if(!inst.endAt) e.endAt='请选择下线时间';
+  if(inst.startAt && inst.endAt && new Date(inst.endAt) <= new Date(inst.startAt))
+    e.endAt='下线时间必须晚于上线时间';
+  // 时间重叠冲突：同国家其他实例（含其他已发布活动）
+  if(inst.country && inst.startAt && inst.endAt){
+    campaigns.forEach(c=>{
+      c.instances.forEach((o,oi)=>{
+        if(c.id===camp.id && oi===idx) return;
+        if(o.country===inst.country && overlap(inst.startAt,inst.endAt,o.startAt,o.endAt))
+          e.startAt=`与「${c.name} / ${countryOf(o.country).name}」实例时间窗重叠（${fmtDT(o.startAt)} ~ ${fmtDT(o.endAt)}）`;
+      });
+    });
+    // 向导内尚未入 campaigns 的新活动
+    if(state.wiz && state.wiz.draft===camp && !campaigns.find(c=>c.id===camp.id)){
+      camp.instances.forEach((o,oi)=>{
+        if(oi===idx) return;
+        if(o.country===inst.country && o.startAt&&o.endAt && overlap(inst.startAt,inst.endAt,o.startAt,o.endAt))
+          e.startAt='与本活动内同国家实例时间窗重叠';
+      });
+    }
+  }
+  if(!inst.products.length) e.products='至少选择 1 个活动商品';
+  const oos = inst.products.filter(s=>P(s) && P(s).stock===0);
+  if(oos.length) e.products=`商品「${P(oos[0]).name}」当前缺货，不可上架`;
+  if(!inst.copy.title.trim()) e.title='活动标题为必填项';
+  else if(inst.copy.title.length>60) e.title='标题不可超过 60 字';
+  return e;
+}
+function validateAll(camp){
+  return camp.instances.map((inst,i)=>validateInstance(camp,inst,i));
+}
+/* 发布前检查清单（L3） */
+function checklist(camp, wizKey){
+  const errs = validateAll(camp);
+  const timeLogicOk = camp.instances.every(i=>i.startAt&&i.endAt&&new Date(i.endAt)>new Date(i.startAt));
+  let conflict = null;
+  camp.instances.forEach((i,idx)=>{ const e=errs[idx]; if(e.startAt&&e.startAt.includes('重叠')) conflict=e.startAt; });
+  const requiredOk = errs.every(e=>!e.country&&!e.lang&&!e.startAt&&!e.endAt&&!e.products&&!e.title);
+  const oos = [];
+  camp.instances.forEach(i=>i.products.forEach(s=>{ if(P(s)&&P(s).stock===0) oos.push(`${countryOf(i.country).name} / ${P(s).name}`); }));
+  const pv = state.previewed[wizKey]||{};
+  return [
+    { key:'time',  label:'时间逻辑合法', pass:timeLogicOk, failMsg:'存在「下线时间早于上线时间」的实例，请回到第 2 步修正' },
+    { key:'conflict', label:'同国家实例时间无重叠冲突', pass:!conflict, failMsg:conflict||'' },
+    { key:'required', label:'必填项完整（国家/语言/时间/商品/标题）', pass:requiredOk, failMsg:'存在未填写完整的实例，左侧带 ⚠ 标记' },
+    { key:'stock', label:'商品全部在售且有货', pass:oos.length===0, failMsg:`缺货商品：${oos.join('；')}` },
+    { key:'preview', label:'已完成 PC 与 Mobile 双端预览', pass:!!(pv.pc&&pv.mobile), failMsg:'请在第 2 步点击实例的「预览」按钮，分别完成 PC 与 Mobile 端确认' },
+  ];
+}
+
+/* =====================================================================
+ * 视图渲染
+ * ===================================================================*/
+function render(){
+  document.getElementById('clockNow').textContent = fmtClock(state.mockNow);
+  const tzRoot = document.getElementById('clockTZ');
+  if(tzRoot){
+    const d = state.mockNow;
+    tzRoot.innerHTML = `
+      <div class="tz-row"><span>UTC+8 北京</span><b>${fmtTZ(d,'Asia/Shanghai')}</b></div>
+      <div class="tz-row"><span>UTC+1 伦敦</span><b>${fmtTZ(d,'Europe/London')}</b></div>
+      <div class="tz-row"><span>UTC+2 柏林</span><b>${fmtTZ(d,'Europe/Berlin')}</b></div>
+      <div class="tz-row"><span>UTC-4 纽约</span><b>${fmtTZ(d,'America/New_York')}</b></div>
+      <div class="tz-row"><span>UTC+9 东京</span><b>${fmtTZ(d,'Asia/Tokyo')}</b></div>`;
+  }
+  renderNav();
+  const main = document.getElementById('main');
+  if(state._lastView !== state.view) main.scrollTop = 0;
+  state._lastView = state.view;
+  if(state.view==='list') main.innerHTML = viewList();
+  else if(state.view==='themes') main.innerHTML = viewThemes();
+  else if(state.view==='detail') main.innerHTML = viewDetail();
+  else if(state.view==='wizard') main.innerHTML = viewWizard();
+  if(state._focusSearch){
+    state._focusSearch = false;
+    const si = document.getElementById('searchInput');
+    if(si){ si.focus(); si.setSelectionRange(si.value.length, si.value.length); }
+  }
+}
+function renderNav(){
+  const items = [
+    {sec:'工作台'},
+    {k:'list', ico:'📋', t:'活动管理'},
+    {k:'themes', ico:'🎨', t:'主题库'},
+    {sec:'帮助'},
+    {k:'guide', ico:'💡', t:'演示引导'},
+  ];
+  document.getElementById('nav').innerHTML = items.map(it=>{
+    if(it.sec) return `<div class="nav-sec">${it.sec}</div>`;
+    return `<div class="nav-item ${state.view===it.k||(state.view==='detail'&&it.k==='list')||(state.view==='wizard'&&it.k==='list')?'active':''}" onclick="nav('${it.k}')"><span class="ico">${it.ico}</span>${it.t}</div>`;
+  }).join('');
+}
+function nav(k){
+  if(k==='guide'){ showGuide(); return; }
+  state.view=k; render();
+}
+
+/* ---------- 活动列表 ---------- */
+function viewList(){
+  const tabs = [['all','全部'],['draft','草稿'],['scheduled','待上线'],['live','进行中'],['ended','已结束']];
+  return `
+  <div class="page-head">
+    <div><h1>活动管理</h1><div class="sub">活动 → 主题模板 → 国家/地区实例 三层模型 · 样式复用、排期自动、内容差异化</div></div>
+    <button class="btn primary" onclick="openWizard()">＋ 新建活动</button>
+  </div>
+  <div class="toolbar">
+    <div class="tabs">${tabs.map(([k,t])=>`<span class="tab ${state.filter===k?'active':''}" onclick="state.filter='${k}';render()">${t}</span>`).join('')}</div>
+    <div class="search"><input id="searchInput" placeholder="搜索活动名称…" value="${esc(state.search)}" oninput="state.search=this.value;renderCardsOnly()"></div>
+  </div>
+  <div id="cardsWrap">${viewListCards()}</div>`;
+}
+function renderCardsOnly(){
+  const wrap = document.getElementById('cardsWrap');
+  if(wrap) wrap.innerHTML = viewListCards();
+}
+function viewListCards(){
+  let list = campaigns.filter(c=>{
+    const s = campStatus(c);
+    if(state.filter!=='all' && s!==state.filter) return false;
+    if(state.search && !c.name.toLowerCase().includes(state.search.toLowerCase())) return false;
+    return true;
+  });
+  return list.length? `<div class="cards">${list.map(c=>{
+    const t = themeOf(c), s = campStatus(c);
+    const starts = c.instances.map(i=>i.startAt).sort(), ends = c.instances.map(i=>i.endAt).sort();
+    return `<div class="c-card" onclick="openDetail('${c.id}')">
+      <div class="c-theme" style="background:${t.banner}"></div>
+      <div class="c-body">
+        <div class="c-title"><h3>${esc(c.name)}</h3>${badge(s)}</div>
+        <div class="c-meta">
+          <div>主题：<b>${t.name}</b>（${c.instances.length} 个国家/地区实例复用）</div>
+          <div>排期：<b>${fmtDT(starts[0])}</b> ~ <b>${fmtDT(ends[ends.length-1])}</b></div>
+          <div class="c-flags">${c.instances.map(i=>countryOf(i.country).flag).join('')}</div>
+        </div>
+      </div>
+      <div class="c-foot" onclick="event.stopPropagation()">
+        <button class="btn sm" onclick="openWizard('${c.id}')">✏️ 编辑</button>
+        <button class="btn sm" onclick="openDetail('${c.id}')">查看实例 →</button>
+      </div>
+    </div>`;}).join('')}</div>`
+  : `<div class="empty"><div class="e">🗂️</div>没有符合条件的活动<br><br><button class="btn primary" onclick="openWizard()">＋ 新建第一个活动</button></div>`;
+}
+
+/* ---------- 主题库 ---------- */
+function themePreviewInner(t){
+  return `<div class="t-prev" style="background:${t.banner}">
+    <div class="bar" style="background:rgba(255,255,255,.9)"></div>
+    <div class="bar2" style="background:rgba(255,255,255,.6)"></div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <span style="width:52px;height:18px;border-radius:9px;background:${t.c.accent};opacity:.95"></span>
+      <span style="width:34px;height:18px;border-radius:9px;background:rgba(255,255,255,.25)"></span>
+    </div></div>`;
+}
+function viewThemes(){
+  return `
+  <div class="page-head"><div><h1>主题库</h1><div class="sub">页面样式资产统一管理 · 一个主题可被多个国家/地区、多个活动复用</div></div>
+    <button class="btn primary" onclick="openThemeWizard()">＋ 新建主题</button></div>
+  <div class="hint">💡 主题解决「场景 1」：Prime Day 蓝、Black Friday 黑等样式只需维护一次，同一活动下所有国家实例自动复用，运营不可在实例层修改样式，从源头保证全球视觉一致。</div>
+  <div class="t-grid">${THEMES.map(t=>{
+    const used = campaigns.filter(c=>c.themeId===t.id);
+    return `<div class="t-card" style="cursor:default">
+      ${themePreviewInner(t)}
+      <div class="t-info">
+        <h4>${t.name}<span class="badge draft">v1.0</span></h4>
+        <p>${t.desc}</p>
+        <div class="t-swatch"><span style="background:${t.c.deep}"></span><span style="background:${t.c.primary}"></span><span style="background:${t.c.accent}"></span><span style="background:${t.c.bg}"></span></div>
+        <p style="margin-top:8px">复用：${used.length? used.map(c=>esc(c.name)).join('、') : '暂无活动使用'}</p>
+      </div></div>`;}).join('')}</div>`;
+}
+
+/* ---------- 活动详情 ---------- */
+function openDetail(id){ state.detailId=id; state.view='detail'; render(); }
+function viewDetail(){
+  const c = campaigns.find(x=>x.id===state.detailId);
+  if(!c) return viewList();
+  const t = themeOf(c), s = campStatus(c);
+  const starts = c.instances.map(i=>new Date(i.startAt).getTime()), ends = c.instances.map(i=>new Date(i.endAt).getTime());
+  const min = Math.min(...starts), max = Math.max(...ends);
+  const pct = v => Math.max(0,Math.min(100,(v-min)/(max-min)*100));
+  const nowPct = pct(state.mockNow.getTime());
+  return `
+  <div class="page-head">
+    <div><h1 style="cursor:pointer" onclick="nav('list')"><span style="color:var(--ink-3)">活动管理 /</span> ${esc(c.name)}</h1></div>
+    <div style="display:flex;gap:10px"><button class="btn" onclick="nav('list')">← 返回列表</button><button class="btn primary" onclick="openWizard('${c.id}')">✏️ 编辑活动</button></div>
+  </div>
+  <div class="d-head">
+    <div class="d-themebar" style="background:${t.banner}"></div>
+    <div class="d-headin">
+      <h2>${esc(c.name)} ${badge(s)}</h2>
+      <div class="d-sub">主题：${t.name} · 负责人：${esc(c.owner)} · ${c.instances.length} 个国家/地区实例</div>
+      <div class="timeline">
+        <div class="tl-track">
+          ${c.instances.map(i=>`<div class="tl-seg" style="left:${pct(new Date(i.startAt).getTime())}%;width:${Math.max(1.5,pct(new Date(i.endAt).getTime())-pct(new Date(i.startAt).getTime()))}%;background:${t.c.primary}"></div>`).join('')}
+          ${nowPct>=0&&nowPct<=100?`<div class="tl-now" style="left:${nowPct}%"></div>`:''}
+        </div>
+        <div class="tl-labels"><span>${fmtDT(new Date(min).toISOString().slice(0,16))}</span><span>${fmtDT(new Date(max).toISOString().slice(0,16))}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="inst-grid">${c.instances.map((i,idx)=>{
+    const st = instStatus(c,i), cn = countryOf(i.country);
+    return `<div class="i-card">
+      <div class="i-top"><div class="i-country">${cn.flag} ${cn.name}</div>${badge(st)}</div>
+      <div class="i-row">🕐 上线 <b>${fmtDT(i.startAt)}</b>（${cn.tz}）</div>
+      <div class="i-row">🕐 下线 <b>${fmtDT(i.endAt)}</b></div>
+      <div class="i-row">🌐 语言 <b>${i.lang}</b> · 🛍️ 商品 <b>${i.products.length}</b> 件 · 🎁 赠品 <b>${i.gifts.length}</b> 件</div>
+      <div class="i-row" style="color:var(--ink-3)">标题：${esc(i.copy.title)||'—'}</div>
+      <div class="i-actions">
+        <button class="btn sm blue" onclick="openPreview('${c.id}',${idx})">👁 预览</button>
+        ${st==='live'?`<button class="btn sm danger" onclick="forceOffline('${c.id}',${idx})">应急下线</button>`:''}
+      </div>
+    </div>`;}).join('')}</div>
+  <div class="panel"><h3>📜 操作日志（含系统自动上下线）</h3>
+    ${state.logs.slice(0,8).map(l=>`<div class="log-item"><span class="t">${l.t}</span><span class="${l.sys?'sys':''}">${l.sys?'[系统]':'[人工]'}</span><span>${esc(l.msg)}</span></div>`).join('')}
+  </div>`;
+}
+function forceOffline(cid, idx){
+  const c = campaigns.find(x=>x.id===cid), i = c.instances[idx];
+  const reason = prompt(`⚠️ 应急下线「${c.name} / ${countryOf(i.country).name}」\n请填写下线原因（必填）：`);
+  if(reason===null) return;
+  if(!reason.trim()){ toast('❌ 应急下线必须填写原因'); return; }
+  i.endAt = fmtClock(state.mockNow).replace(' ','T');
+  state.logs.unshift({t:fmtClock(state.mockNow), sys:false, msg:`主管应急下线「${c.name} / ${countryOf(i.country).name}」：${reason}`});
+  toast(`🛑 已应急下线「${countryOf(i.country).name}」实例`); render();
+}
+
+/* ---------- 向导 ---------- */
+function openWizard(cid){
+  let draft;
+  if(cid){
+    const src = campaigns.find(c=>c.id===cid);
+    draft = JSON.parse(JSON.stringify(src));
+  }else{
+    draft = { id:'c'+Date.now(), name:'', themeId:null, owner:'王运营', published:false, instances:[newInstance()] };
+  }
+  state.wiz = { draft, step:1, sel:0, showErr:false, isNew:!cid };
+  state.view='wizard'; render();
+}
+function newInstance(){
+  return { id:'i'+Date.now()+Math.floor(Math.random()*999), country:'', lang:'', startAt:'', endAt:'', products:[], gifts:[], copy:{title:'',subtitle:'',rules:''} };
+}
+function wizErr(idx){
+  if(!state.wiz.showErr) return {};
+  return validateInstance(state.wiz.draft, state.wiz.draft.instances[idx], idx);
+}
+function curInst(){ return state.wiz.draft.instances[state.wiz.sel]; }
+function viewWizard(){
+  const w = state.wiz, d = w.draft;
+  const liveLock = !w.isNew && d.published && d.instances.some(i=>instStatus(d,i)==='live');
+  return `
+  <div class="page-head"><div><h1>${w.isNew?'新建活动':'编辑活动：'+esc(d.name)}</h1><div class="sub">三步完成全球活动配置：选主题 → 配国家实例 → 检查发布</div></div>
+    <button class="btn" onclick="nav('list')">✕ 取消</button></div>
+  <div class="steps">
+    ${['选择主题','配置国家/地区实例','检查并发布'].map((t,i)=>`
+      <div class="step ${w.step===i+1?'on':''} ${w.step>i+1?'done':''}"><span class="n">${w.step>i+1?'✓':i+1}</span>${t}${i<2?'<span class="line"></span>':''}</div>`).join('')}
+  </div>
+  ${w.step===1? wizStep1(liveLock) : w.step===2? wizStep2() : wizStep3()}
+  <div class="wiz-foot">
+    <button class="btn" onclick="wizPrev()" ${w.step===1?'disabled':''}>← 上一步</button>
+    <div>
+      ${w.step<3?`<button class="btn primary" onclick="wizNext()">下一步 →</button>`
+        :`<button class="btn primary" onclick="openChecklist()">🚀 发布活动</button>`}
+    </div>
+  </div>`;
+}
+function wizStep1(liveLock){
+  const w = state.wiz, d = w.draft;
+  return `
+  ${liveLock?`<div class="lock-note">🔒 活动已有进行中实例：主题与进行中实例的时间不可修改（PRD F3-5），防止线上页面被中途改崩。</div>`:''}
+  <div class="form" style="margin-bottom:16px">
+    <div class="f-row"><div class="f-item"><label>活动名称 <span class="req">*</span></label>
+      <input class="${w.showErr&&!d.name.trim()?'err':''}" placeholder="例如：2026 国庆大促" value="${esc(d.name)}" oninput="state.wiz.draft.name=this.value">
+      ${w.showErr&&!d.name.trim()?`<div class="f-err">请填写活动名称</div>`:''}</div></div>
+  </div>
+  <div class="w-sec">选择主题模板（该活动下所有国家实例复用此样式）</div>
+  <div class="t-grid">${THEMES.map(t=>`
+    <div class="t-card ${d.themeId===t.id?'sel':''}" onclick="${liveLock?'':`state.wiz.draft.themeId='${t.id}';render()`}">
+      ${themePreviewInner(t)}
+      <div class="t-info"><h4>${t.name} ${d.themeId===t.id?'<span style="color:var(--blue)">✓ 已选</span>':''}</h4><p>${t.desc}</p></div>
+    </div>`).join('')}</div>
+  ${w.showErr&&!d.themeId?`<div class="f-err" style="margin-top:10px">请选择一个主题模板</div>`:''}`;
+}
+function wizStep2(){
+  const w = state.wiz, d = w.draft;
+  const inst = d.instances[w.sel];
+  if(!inst) return `<div class="empty"><div class="e">🌍</div>请先添加一个国家/地区实例</div>`;
+  const e = wizErr(w.sel);
+  const st = !w.isNew && d.published ? instStatus(d,inst) : 'draft';
+  const locked = st==='live' || st==='ended';
+  const cn = inst.country ? countryOf(inst.country) : null;
+  return `
+  ${locked?`<div class="lock-note">🔒 该实例当前「${STATUS_TXT[st]}」，时间与国家不可修改；文案与商品排序可改。</div>`:''}
+  <div class="wiz-layout">
+    <div class="inst-list">
+      <div style="font-size:12px;color:var(--ink-2);padding:4px 6px 10px">国家/地区实例（${d.instances.length}）</div>
+      ${d.instances.map((it,i)=>{
+        const er = state.wiz.showErr && Object.keys(validateInstance(d,it,i)).length>0;
+        return `<div class="inst-li ${i===w.sel?'on':''}" onclick="state.wiz.sel=${i};render()">
+          <span>${it.country? countryOf(it.country).flag+' '+countryOf(it.country).name : '未选择国家'}</span>
+          <span style="display:flex;gap:6px;align-items:center">${er?'<span class="warn">⚠</span>':''}
+          ${d.instances.length>1?`<span style="color:var(--ink-3);cursor:pointer" onclick="event.stopPropagation();delInstance(${i})">✕</span>`:''}</span>
+        </div>`;}).join('')}
+      <button class="add-inst" onclick="addInstance()">＋ 添加国家/地区</button>
+    </div>
+    <div class="form">
+      <div class="f-row">
+        <div class="f-item"><label>国家/地区 <span class="req">*</span></label>
+          <select class="${e.country?'err':''}" ${locked?'disabled':''} onchange="setCountry(this.value)">
+            <option value="">请选择…</option>
+            ${COUNTRIES.map(c=>`<option value="${c.code}" ${inst.country===c.code?'selected':''}>${c.flag} ${c.name}（${c.tz}）</option>`).join('')}
+          </select>${e.country?`<div class="f-err">${e.country}</div>`:''}</div>
+        <div class="f-item"><label>文案语言 <span class="req">*</span></label>
+          <select class="${e.lang?'err':''}" onchange="curInst().lang=this.value">
+            <option value="">请选择…</option>
+            ${(cn?cn.langs:['中文','英语','德语','西班牙语','日语','法语']).map(l=>`<option ${inst.lang===l?'selected':''}>${l}</option>`).join('')}
+          </select>${e.lang?`<div class="f-err">${e.lang}</div>`:''}</div>
+      </div>
+      <div class="f-row">
+        <div class="f-item"><label>上线时间 <span class="req">*</span>（${cn?cn.tz:'目标国家本地时间'}）</label>
+          <input type="datetime-local" class="${e.startAt?'err':''}" ${locked?'disabled':''} value="${inst.startAt}" onchange="curInst().startAt=this.value">
+          ${e.startAt?`<div class="f-err">${e.startAt}</div>`:''}<div class="f-tz">以该国本地时间录入，系统转 UTC 存储并自动处理夏令时，到点自动上线</div></div>
+        <div class="f-item"><label>下线时间 <span class="req">*</span></label>
+          <input type="datetime-local" class="${e.endAt?'err':''}" ${locked?'disabled':''} value="${inst.endAt}" onchange="curInst().endAt=this.value">
+          ${e.endAt?`<div class="f-err">${e.endAt}</div>`:''}<div class="f-tz">到点自动下线，无需人工值守</div></div>
+      </div>
+      <div class="f-row"><div class="f-item"><label>活动商品 <span class="req">*</span>（已选 ${inst.products.length}）</label>
+        <div class="p-grid">${PRODUCTS.map(p=>{
+          const sel = inst.products.includes(p.sku), oos = p.stock===0, dis = oos && !sel;
+          return `<div class="p-item ${sel?'sel':''} ${dis?'dis':''}" style="${oos&&sel?'border-color:var(--red)':''}" onclick="${dis?'':`toggleProd('${p.sku}')`}" title="${oos?(sel?'缺货商品，点击可取消选中':'缺货不可选'):''}">
+            <div class="p-thumb" style="background:${p.color}">${p.emoji}</div>
+            <div><div class="pn">${p.name}</div><div class="pp">${p.price}</div>${oos?`<div class="oos">${sel?'缺货（已选中）':'缺货'}</div>`:''}</div>
+          </div>`;}).join('')}</div>
+        ${e.products?`<div class="f-err">${e.products}</div>`:''}</div></div>
+      <div class="f-row"><div class="f-item"><label>赠品（选填）</label>
+        <div class="p-grid">${GIFTS.map(g=>{
+          const sel = inst.gifts.includes(g.sku);
+          return `<div class="p-item ${sel?'sel':''}" onclick="toggleGift('${g.sku}')">
+            <div class="p-thumb" style="background:#8A6D1A">${g.emoji}</div>
+            <div><div class="pn">${g.name}</div><div class="pp">赠品</div></div>
+          </div>`;}).join('')}</div></div></div>
+      <div class="f-row">
+        <div class="f-item"><label>活动标题（${inst.lang||'—'}）<span class="req">*</span></label>
+          <input class="${e.title?'err':''}" maxlength="60" placeholder="请输入该语言的落地页标题" value="${esc(inst.copy.title)}" oninput="curInst().copy.title=this.value">
+          ${e.title?`<div class="f-err">${e.title}</div>`:''}</div>
+      </div>
+      <div class="f-row">
+        <div class="f-item"><label>副标题</label>
+          <input placeholder="选填" value="${esc(inst.copy.subtitle)}" oninput="curInst().copy.subtitle=this.value"></div>
+      </div>
+      <div class="f-row">
+        <div class="f-item"><label>活动规则文案</label>
+          <textarea rows="3" placeholder="每行一条规则" oninput="curInst().copy.rules=this.value">${esc(inst.copy.rules)}</textarea></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border);padding-top:16px">
+        <button class="btn blue" onclick="openWizPreview(${w.sel})">👁 预览该实例（PC / Mobile）</button>
+      </div>
+    </div>
+  </div>`;
+}
+function wizStep3(){
+  const w = state.wiz, d = w.draft, t = THEMES.find(x=>x.id===d.themeId);
+  const errs = validateAll(d);
+  const errCount = errs.reduce((n,e)=>n+Object.keys(e).length,0) + (!d.name.trim()?1:0);
+  return `
+  <div class="panel" style="margin-bottom:16px">
+    <h3>发布摘要</h3>
+    <div class="i-row">活动名称：<b>${esc(d.name)||'（未填写）'}</b></div>
+    <div class="i-row">主题模板：<b>${t?t.name:'（未选择）'}</b> — ${d.instances.length} 个国家实例复用该样式</div>
+    <div class="i-row">国家实例：${d.instances.map(i=>`${i.country?countryOf(i.country).flag+' '+countryOf(i.country).name:'未选择'}（${STATUS_TXT['scheduled']}）`).join('、')}</div>
+    <div class="i-row" style="margin-top:8px">${errCount?`<span style="color:var(--red)">⚠ 仍有 ${errCount} 处校验未通过，发布将被拦截</span>`:'<span style="color:var(--green)">✓ 基础校验全部通过，可发起发布</span>'}</div>
+  </div>
+  <div class="hint">点击「发布活动」将触发<b>发布前检查清单</b>（L3 防线）：时间逻辑、冲突检测、必填完整性、商品在售状态、双端预览确认，五项全过才允许发布。</div>`;
+}
+/* wizard interactions */
+function setCountry(code){
+  const inst = state.wiz.draft.instances[state.wiz.sel];
+  inst.country = code;
+  const cn = countryOf(code);
+  if(cn && !cn.langs.includes(inst.lang)) inst.lang = cn.langs[0];
+  render();
+}
+function toggleProd(sku){ const a=state.wiz.draft.instances[state.wiz.sel].products; const i=a.indexOf(sku); i>=0?a.splice(i,1):a.push(sku); render(); }
+function toggleGift(sku){ const a=state.wiz.draft.instances[state.wiz.sel].gifts; const i=a.indexOf(sku); i>=0?a.splice(i,1):a.push(sku); render(); }
+function addInstance(){ state.wiz.draft.instances.push(newInstance()); state.wiz.sel = state.wiz.draft.instances.length-1; render(); }
+function delInstance(i){ state.wiz.draft.instances.splice(i,1); state.wiz.sel = Math.max(0,i-1); render(); }
+function wizPrev(){ state.wiz.step--; state.wiz.showErr=false; render(); }
+function wizNext(){
+  const w = state.wiz, d = w.draft;
+  w.showErr = true;
+  if(w.step===1){
+    if(!d.name.trim() || !d.themeId){ render(); toast('❌ 请完善活动名称并选择主题'); return; }
+  }
+  if(w.step===2){
+    const bad = validateAll(d).some(e=>Object.keys(e).length>0);
+    if(bad){ render(); toast('❌ 存在校验错误，请先修正带 ⚠ 的实例'); return; }
+  }
+  w.showErr=false; w.step++; render();
+}
+
+/* ---------- 发布前检查清单弹窗 ---------- */
+function openChecklist(){
+  const w = state.wiz, d = w.draft;
+  const items = checklist(d, 'wiz');
+  const allPass = items.every(i=>i.pass);
+  document.getElementById('modal-root').innerHTML = `
+  <div class="mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal" style="width:620px;max-width:94vw">
+      <div class="m-head"><h3>🚀 发布前检查清单 — ${esc(d.name)}</h3><button class="m-x" onclick="closeModal()">✕</button></div>
+      <div class="m-body">
+        ${items.map(it=>`<div class="chk ${it.pass?'pass':'fail'}">
+          <span class="ic">${it.pass?'✓':'✕'}</span>
+          <div><h5>${it.label}</h5>${it.pass?'':`<p>${esc(it.failMsg)}</p>`}</div>
+          ${!it.pass?`<button class="btn sm jump" onclick="closeModal();state.wiz.step=2;state.wiz.showErr=true;render()">去修正</button>`:''}
+        </div>`).join('')}
+        ${allPass
+          ? `<div class="hint" style="background:#E6F6EC;border-color:#B7E4C7;color:#276749;margin:0">✓ 五项检查全部通过。发布后未到上线时间的实例将进入「待上线」队列，到点由系统自动上线，结束后自动下线。</div>`
+          : `<div class="hint" style="background:#FFF5F5;border-color:#F5C2C2;color:#C53030;margin:0">存在未通过的检查项，发布按钮已禁用 —— 这正是防错体系在拦截一次潜在的线上事故。</div>`}
+      </div>
+      <div class="m-foot">
+        <button class="btn" onclick="closeModal()">返回修改</button>
+        <button class="btn primary" ${allPass?'':'disabled'} onclick="doPublish()">确认发布</button>
+      </div>
+    </div>
+  </div>`;
+}
+function doPublish(){
+  const w = state.wiz, d = w.draft;
+  d.published = true;
+  if(w.isNew){ campaigns.unshift(d); }
+  else{
+    const idx = campaigns.findIndex(c=>c.id===d.id);
+    // 未发布 -> 发布；已发布活动保存修改
+    campaigns[idx] = d;
+  }
+  state.logs.unshift({t:fmtClock(state.mockNow), sys:false, msg:`王运营 发布了「${d.name}」（${d.instances.length} 个实例）`});
+  closeModal();
+  toast(`🎉「${d.name}」发布成功，实例已进入自动上下线队列`);
+  state.wiz = null;
+  openDetail(d.id);
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+
+/* ---------- 新建主题 ---------- */
+function defaultThemeColors(){ return { primary:'#1A1A1A', deep:'#000000', bg:'#F5F6F8', accent:'#2B6CB0', ink:'#FFFFFF' }; }
+function openThemeWizard(){
+  state.themeWiz = { name:'', desc:'', style:'', colors:defaultThemeColors(), step:1 };
+  renderThemeWizard();
+}
+function themeBanner(colors){ return `linear-gradient(120deg,${colors.deep} 0%,${colors.primary} 55%,${colors.accent} 100%)`; }
+function previewThemeFromForm(){
+  const f = document.getElementById('themeForm');
+  if(!f) return null;
+  return {
+    name:'主题预览', desc:'', banner:themeBanner({
+      deep:f.deep.value, primary:f.primary.value, accent:f.accent.value
+    }),
+    c:{ primary:f.primary.value, deep:f.deep.value, bg:f.bg.value, accent:f.accent.value, ink:f.ink.value }
+  };
+}
+function renderThemeWizard(){
+  const w = state.themeWiz;
+  const live = previewThemeFromForm() || { name:'主题预览', banner:'#ccc', c:defaultThemeColors() };
+  document.getElementById('modal-root').innerHTML = `
+  <div class="mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal" style="width:760px;max-width:94vw;max-height:92vh">
+      <div class="m-head"><h3>＋ 新建主题</h3><button class="m-x" onclick="closeModal()">✕</button></div>
+      <div class="m-body" style="display:flex;flex-direction:column;gap:16px;overflow:hidden;flex:1;min-height:0">
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div style="flex:1">
+            <form id="themeForm" onsubmit="return false">
+              <div class="form" style="margin:0">
+                <div class="f-row"><div class="f-item"><label>主题名称 <span class="req">*</span></label><input name="name" value="${esc(w.name)}" oninput="state.themeWiz.name=this.value" required></div></div>
+                <div class="f-row"><div class="f-item"><label>主题描述 <span class="req">*</span></label><input name="desc" value="${esc(w.desc)}" oninput="state.themeWiz.desc=this.value" placeholder="用一句话说明该主题适用的大促/氛围" required></div></div>
+                <div class="f-row"><div class="f-item"><label>传达的主题风格 / 关键词</label><input name="style" value="${esc(w.style)}" oninput="state.themeWiz.style=this.value" placeholder="例如：科技蓝、暗黑高级感、热烈促销"></div></div>
+                <div class="f-row"><div class="f-item"><label>深色调（Banner 起点）</label><div style="display:flex;gap:8px"><input type="color" name="deep" value="${w.colors.deep}" oninput="renderThemeWizard()"><input name="deepHex" value="${w.colors.deep}" oninput="themeForm.deep.value=this.value;renderThemeWizard()" style="flex:1"></div></div></div>
+                <div class="f-row"><div class="f-item"><label>主色（按钮/价格强调）</label><div style="display:flex;gap:8px"><input type="color" name="primary" value="${w.colors.primary}" oninput="renderThemeWizard()"><input name="primaryHex" value="${w.colors.primary}" oninput="themeForm.primary.value=this.value;renderThemeWizard()" style="flex:1"></div></div></div>
+                <div class="f-row"><div class="f-item"><label>强调色（点缀/徽章）</label><div style="display:flex;gap:8px"><input type="color" name="accent" value="${w.colors.accent}" oninput="renderThemeWizard()"><input name="accentHex" value="${w.colors.accent}" oninput="themeForm.accent.value=this.value;renderThemeWizard()" style="flex:1"></div></div></div>
+                <div class="f-row"><div class="f-item"><label>页面背景色</label><div style="display:flex;gap:8px"><input type="color" name="bg" value="${w.colors.bg}" oninput="renderThemeWizard()"><input name="bgHex" value="${w.colors.bg}" oninput="themeForm.bg.value=this.value;renderThemeWizard()" style="flex:1"></div></div></div>
+                <div class="f-row"><div class="f-item"><label>文案/标题色</label><div style="display:flex;gap:8px"><input type="color" name="ink" value="${w.colors.ink}" oninput="renderThemeWizard()"><input name="inkHex" value="${w.colors.ink}" oninput="themeForm.ink.value=this.value;renderThemeWizard()" style="flex:1"></div></div></div>
+              </div>
+            </form>
+          </div>
+          <div style="width:280px;flex-shrink:0">
+            <div class="panel" style="padding:14px;margin:0"><h3 style="margin:0 0 10px">实时预览</h3>
+              <div class="t-card" style="cursor:default">${themePreviewInner(live)}
+                <div class="t-info"><h4>${esc(w.name)||'未命名主题'}</h4><p>${esc(w.desc)||'暂无描述'}</p>
+                  <div class="t-swatch"><span style="background:${live.c.deep}"></span><span style="background:${live.c.primary}"></span><span style="background:${live.c.accent}"></span><span style="background:${live.c.bg};border-color:#ccc"></span></div>
+                </div>
+              </div>
+              <div style="margin-top:12px;font-size:11px;color:var(--ink-3);line-height:1.8">保存后，该主题即可在「新建活动」的主题选择中被复用。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="m-foot"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="saveTheme()">保存主题</button></div>
+    </div>
+  </div>`;
+  // 同步hex输入
+  const f = document.getElementById('themeForm');
+  if(f){
+    ['deep','primary','accent','bg','ink'].forEach(k=>{
+      f[k+'Hex'].value = f[k].value;
+    });
+  }
+}
+function saveTheme(){
+  const w = state.themeWiz;
+  if(!w.name.trim() || !w.desc.trim()){ toast('❌ 请填写主题名称和描述'); renderThemeWizard(); return; }
+  const f = document.getElementById('themeForm');
+  const t = {
+    id:'t-'+Date.now(),
+    name:w.name.trim(),
+    desc:w.desc.trim()+(w.style.trim()?` · 风格：${w.style.trim()}`:''),
+    c:{ primary:f.primary.value, deep:f.deep.value, bg:f.bg.value, accent:f.accent.value, ink:f.ink.value },
+    banner:themeBanner({ deep:f.deep.value, primary:f.primary.value, accent:f.accent.value })
+  };
+  THEMES.unshift(t);
+  state.logs.unshift({t:fmtClock(state.mockNow), sys:false, msg:`王运营 新建了主题「${t.name}」`});
+  closeModal(); toast(`🎨 主题「${t.name}」已保存，可在新建活动时复用`);
+}
+
+/* ---------- 预览（PC/Mobile + 运营/用户视角 + 访问隔离） ---------- */
+function openPreview(cid, idx){
+  const c = campaigns.find(x=>x.id===cid);
+  renderPreviewModal({ camp:c, inst:c.instances[idx], idx, device:'pc', mode:'ops', trackKey:null });
+}
+function openWizPreview(idx){
+  const w = state.wiz;
+  renderPreviewModal({ camp:w.draft, inst:w.draft.instances[idx], idx, device:'pc', mode:'ops', trackKey:'wiz' });
+}
+function renderPreviewModal(pv){
+  window.__pv = pv;
+  const { camp, inst, device, mode } = pv;
+  const t = THEMES.find(x=>x.id===camp.themeId) || THEMES[0];
+  const st = instStatus(camp, inst);
+  const cn = inst.country ? countryOf(inst.country) : {flag:'🌍',name:'未选择',tz:'—'};
+  // 记录预览行为（发布检查清单第 5 项依据）
+  if(pv.trackKey){
+    state.previewed[pv.trackKey] = state.previewed[pv.trackKey]||{};
+    state.previewed[pv.trackKey][device] = true;
+  }
+  const token = 'tk_' + Math.random().toString(36).slice(2,10);
+  const url = mode==='ops'
+    ? `mall.insta360.com/c/${camp.name?encodeURIComponent(camp.name):'campaign'}?country=${inst.country||'--'}&preview_token=${token}`
+    : `mall.insta360.com/c/${camp.name?encodeURIComponent(camp.name):'campaign'}?country=${inst.country||'--'}`;
+  // 访问隔离：用户视角仅 live 放行
+  const gated = mode==='user' && st!=='live';
+  document.getElementById('modal-root').innerHTML = `
+  <div class="mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal pv-modal">
+      <div class="m-head"><h3>👁 预览 — ${esc(camp.name)||'（未命名活动）'} / ${cn.flag} ${cn.name}</h3><button class="m-x" onclick="closeModal()">✕</button></div>
+      <div class="m-body" style="display:flex;flex-direction:column;gap:14px;overflow:hidden">
+        <div class="pv-bar">
+          <div class="seg">
+            <span class="${device==='pc'?'on':''}" onclick="pvSet({device:'pc'})">🖥 PC</span>
+            <span class="${device==='mobile'?'on':''}" onclick="pvSet({device:'mobile'})">📱 Mobile</span>
+          </div>
+          <div class="seg">
+            <span class="${mode==='ops'?'on':''}" onclick="pvSet({mode:'ops'})">🛠 运营视角</span>
+            <span class="${mode==='user'?'on':''}" onclick="pvSet({mode:'user'})">🧑 用户视角</span>
+          </div>
+          ${badge(st)}
+        </div>
+        <div class="pv-url">
+          ${mode==='ops'?`<span class="tk">内部预览 token · 24h 有效 · 仅员工可见</span>`:`<span class="pub">C 端公开访问</span>`}
+          <span style="overflow:hidden;text-overflow:ellipsis">${esc(url)}</span>
+        </div>
+        <div class="pv-stage">
+          <div class="device ${device}">
+            ${mode==='ops'?`<div class="wm">预览模式 · 正式生效前用户不可访问</div>`:''}
+            ${gated ? gateHTML(t, st, inst) : landingHTML(t, inst, device)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function pvSet(patch){ Object.assign(window.__pv, patch); renderPreviewModal(window.__pv); }
+function gateHTML(t, st, inst){
+  const isScheduled = st==='scheduled' || st==='draft';
+  return `<div class="gate" style="background:${t.banner}">
+    <div class="big">${isScheduled?'⏳':'🏁'}</div>
+    <h2>${isScheduled?'活动尚未开始':'活动已结束'}</h2>
+    <p>${isScheduled
+      ? `该活动将于 ${fmtDT(inst.startAt)}（当地时间）开始，敬请期待。<br>（C 端路由仅放行「进行中」实例：本页面对用户返回活动未开始页，URL 中无有效 preview_token）`
+      : '感谢关注，下一波优惠即将到来。'}</p>
+  </div>`;
+}
+function landingHTML(t, inst, device){
+  const prods = inst.products.map(s=>P(s)).filter(Boolean);
+  const gifts = inst.gifts.map(s=>G(s)).filter(Boolean);
+  const msLeft = new Date(inst.endAt).getTime() - state.mockNow.getTime();
+  const dd = Math.max(0, Math.floor(msLeft/86400000)), hh = Math.max(0, Math.floor(msLeft/3600000)%24), mm = Math.max(0, Math.floor(msLeft/60000)%60);
+  return `
+  <div style="background:${t.c.bg}">
+    <div class="lp-banner" style="background:${t.banner}">
+      <span class="tag">INSTA360 OFFICIAL</span>
+      <h1>${esc(inst.copy.title)||'（活动标题）'}</h1>
+      <div class="sub2">${esc(inst.copy.subtitle)||''}</div>
+      <div class="lp-count">
+        <div><b>${String(dd).padStart(2,'0')}</b><i>DAYS</i></div>
+        <div><b>${String(hh).padStart(2,'0')}</b><i>HRS</i></div>
+        <div><b>${String(mm).padStart(2,'0')}</b><i>MIN</i></div>
+      </div>
+    </div>
+    <div class="lp-body">
+      <div class="lp-sec" style="color:${t.c.deep==='#000000'?'#111':t.c.deep}"><span style="background:${t.c.primary}"></span>活动商品</div>
+      <div class="lp-prods">${prods.length? prods.map(p=>`
+        <div class="lp-prod" style="background:#fff">
+          <div class="img" style="background:${p.color}">${p.emoji}</div>
+          <div class="inf"><div class="nm">${p.name}</div><div class="pr" style="color:${t.c.primary}">${p.price}<s>${p.price}</s></div></div>
+        </div>`).join('') : `<div style="grid-column:1/-1;color:var(--ink-3);font-size:12px;padding:14px;border:1px dashed var(--border);border-radius:8px">尚未选择商品</div>`}</div>
+      ${gifts.length?`<div class="lp-sec"><span style="background:#D8B34A"></span>下单即赠</div>
+      <div class="lp-gifts">${gifts.map(g=>`<div class="lp-gift"><span class="g">${g.emoji}</span><span><b>赠</b> ${g.name}</span></div>`).join('')}</div>`:''}
+      <div class="lp-sec"><span style="background:${t.c.accent}"></span>活动规则</div>
+      <div class="lp-rules">${esc(inst.copy.rules)||'暂无规则说明'}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- 演示引导 ---------- */
+function showGuide(){
+  document.getElementById('modal-root').innerHTML = `
+  <div class="mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal" style="width:640px;max-width:94vw">
+      <div class="m-head"><h3>💡 Demo 演示引导</h3><button class="m-x" onclick="closeModal()">✕</button></div>
+      <div class="m-body" style="line-height:2">
+        <div class="chk pass"><span class="ic">1</span><div><h5>主题复用（场景一）</h5><p>打开「主题库」查看 Prime Day 蓝 / Black Friday 黑；进入「2026 Prime Day」详情，英/西/德三个实例复用同一蓝色主题。</p></div></div>
+        <div class="chk pass"><span class="ic">2</span><div><h5>分国家自动上下线（场景二）</h5><p>当前模拟时间为 8/18，Prime Day 英国/西班牙 8/20 上线、德国 8/25 上线。点击左下角「+1 天」推进时钟，观察实例徽章自动变为「进行中」并弹出系统提示；继续推进可看到自动下线。</p></div></div>
+        <div class="chk pass"><span class="ic">3</span><div><h5>分国家差异化内容（场景三）</h5><p>在 Prime Day 详情分别预览英/德/西实例：同一蓝色主题下，商品、赠品与英/德/西语文案各不相同。</p></div></div>
+        <div class="chk pass"><span class="ic">4</span><div><h5>预览与访问隔离（场景四）</h5><p>打开任一实例「预览」，切换 PC / Mobile 设备框；再切到「用户视角」：未生效实例显示「活动尚未开始」页 —— C 端仅放行进行中实例，预览链接带内部 token。</p></div></div>
+        <div class="chk pass"><span class="ic">5</span><div><h5>防错校验</h5><p>进入「开学季 Back to School」草稿 → 编辑 → 第 3 步 → 发布活动：英国实例缺商品，检查清单将拦截发布。也可在第 2 步把下线时间改为早于上线时间，或把英国实例时间改成与 Prime Day 英国重叠，观察即时报错。</p></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
