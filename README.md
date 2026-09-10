@@ -1,5 +1,6 @@
 # Insta360 商城产品（电商B 端方向）作品集
 本仓库为基于影石 Insta360 商城【活动落地配置也产品优化方案&商城优缺点分享与优化方案】作品集。
+Demo链接：https://aalan020912.github.io/Insta360Store-CampaignLandingPage/
 > 影石 Insta360 官方商城 · 活动落地页管理后台设计方案（01.02.03&pdf&demo） + 商城体验分析（pdf）
 
 ---
